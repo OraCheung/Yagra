@@ -6,10 +6,13 @@ from cStringIO import StringIO
 from urllib import quote, unquote
 from string import capwords, strip, split, join
 
+import db
+
 class AdvCGI:
 
     header = 'Content-Type: text/html\n\n'
     url = '/cgi-bin/advcgi.py'
+    login_url = '/cgi-bin/login.py'
 
     formhtml = '''<HTML><HEAD><TITLE>
 Welcome to Yagra</TITLE></HEAD>
@@ -78,7 +81,8 @@ Welcome to Yagra</TITLE></HEAD>
 Name:<I>%s</I><BR>
 Contents:</H3>
 <PRE>%s</PRE>
-Click <A HREF="%s"><B>here</B></A> to return to form.
+Click <A HREF="%s"><B>here</B></A> to return to form.<BR>
+Click <A HREF="%s"><B>here</B></A> to return to login.
 </BODY></HTML>'''
 
     def set_cpp_cookies(self):
@@ -110,8 +114,13 @@ Click <A HREF="%s"><B>here</B></A> to return to form.
 
         self.cookies['info'] = join([self.passwd, file_name], ':')
         self.set_cpp_cookies()
+        self.insertDB()
         print AdvCGI.header + AdvCGI.reshtml % (cookie_status, self.passwd,\
-                                          file_name, file_data, AdvCGI.url)
+                                          file_name, file_data, AdvCGI.url, AdvCGI.login_url)
+
+    def insertDB(self):
+        python_db = db.MyDB()
+        python_db.insert_user(self.user, self.passwd) 
 
     def go(self):
         self.cookies = {}
