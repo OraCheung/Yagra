@@ -28,6 +28,18 @@ class MyDB(object):
         except MySQLdb.Error, e:
             print "Mysql Error %d: %s" % (e.args[0], e.args[1])
 
+    def delete_user(self, user, passwd):
+        try:
+            value = [user, passwd]
+            count = self.cur.execute('delete from User Where user = %s \
+                       and passwd = %s', value) 
+            if count != 1: 
+                print "Delete User Error!"
+            else:
+                self.conn.commit()
+        except MySQLdb.Error, e:
+            print "Mysql Error %d: %s" % (e.args[0], e.args[1])
+
     def __del__(self):
         try:
             self.cur.close()
@@ -77,3 +89,4 @@ if __name__ == '__main__':
     print db.select_user('ora','oid')
  #    print db.insert_user('ki', 'ki')
     print db.update_status('ki',0)
+    print db.delete_user('ora3', 'ki3')
