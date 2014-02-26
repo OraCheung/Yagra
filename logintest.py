@@ -7,6 +7,7 @@ import db
 
 header = 'Content-Type: text/html\n\n'
 url = '/cgi-bin/login.py' 
+loginout_url = '/cgi-bin/loginout.py'
 reshtml = '''<HTML><HEAD><TITLE>
 Yagra Logining</TITLE></HEAD>
 <BODY><H2>Welcome to Yagra</H2>
@@ -15,6 +16,9 @@ Yagra Logining</TITLE></HEAD>
 <H3>Upload Head Photo is:</H3>
 %s
 <BR>Click <A HREF="%s"><B>here</B></A> to return to login.
+<FORM METHOD=post ACTION="%s">
+<INPUT TYPE=hidden Name="personName" Value="%s">
+<P><INPUT TYPE=submit VALUE="Login Out"></FORM>
 </BODY></HTML>'''
 
 
@@ -34,6 +38,6 @@ result = python_db.select_user(name, passwd)
 if result == 1:
     python_db.update_status(name,1)
     image = '<IMG SRC="/cgi-bin/image/%s.jpg" width = "256" height = "256" >' % (name)
-    print header + reshtml % (name, passwd, image, url)
+    print header + reshtml % (name, passwd, image, url, loginout_url, name)
 else:
     print header+"You passwd is error!"
