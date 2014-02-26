@@ -2,21 +2,23 @@
 
 import cgi
 
+#import db
+
 header = 'Content-Type: text/html\n\n'
 
 formhtml = '''<HTML><HEAD><TITLE>
 Ora CGI Demo</TITLE></HEAD>
 <BODY><H3>Welcome to Yagra: </H3> 
-<FORM ACTION="/cgi-bin/login.py">
-<B>Enter your Name:&nbsp&nbsp&nbsp&nbsp&nbsp</B>
+<FORM ACTION="/cgi-bin/logintest.py">
+<B>Enter your Name:&nbsp&nbsp&nbsp&nbsp&nbsp</B><BR>
 <INPUT TYPE=hidden NAME=action VALUE=edit>
 <INPUT TYPE=text NAME=personName VALUE="" SIZE=15><BR>
-<B>Enter your Password:</B>
+<B>Enter your Password:</B><BR>
 <INPUT TYPE=hidden NAME=action VALUE=edit>
 <INPUT TYPE=password NAME=personPassword VALUE="" SIZE=15><BR>
-<P><B>If you are new user,please first </B><a href="register.py">REGISTER</a>
+<P><B>If you are new user,please first </B><a href="/cgi-bin/advcgi.py">REGISTER</a>
 %s
-<p><INPUT TYPE=submit VALUE="login" ></FORM></BODY></HTML?'''
+<p><INPUT TYPE=submit VALUE="login" ></FORM></BODY></HTML>'''
 
 fradio = '<INPUT TYPE=radio NAME=howmany VALUE="%s" %s> %s\n'
 
