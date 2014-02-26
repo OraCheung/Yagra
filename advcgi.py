@@ -64,12 +64,71 @@ Welcome to Yagra</TITLE></HEAD>
 
         if not self.cookies.has_key('user') or self.cookies['user'] == '':
             cookie_status = '<I>(cookie has not been set yet)</I>'
-            use_cook = ''
+            user_cook = ''
         else:
             user_cook = cookie_status = self.cookies['user']
 
         print AdvCGI.header + AdvCGI.formhtml % (AdvCGI.url,\
                   cookie_status, user_cook, self.who, lang_str, self.fn)
+
+    errhtml = '''<HTML><HEAD<TITLE>
+Welcome to Yagra</TITLE></HEAD>
+<BODY><H3>ERROR</H3>
+<B>%s</B><P>
+<FORM><INPUT TYPE=button VALUE=Back ONCLICK="window.history.back()"></FORM>
+</BODY></HTML>'''
+
+    def show_error(self):
+        print AdvCGI.header + AdvCGI.errhtml % (self.error)
+
+    reshtml = '''<HTML><HEAD<TITLE>
+Welcome to Yagra</TITLE></HEAD>
+<BODY><H2>Your Register Informations</H2>
+<H3>Your Cookie value is: <B>%s</B></H3>
+<H3>Your name is: <B>%s</B></H3>
+<H3>Your can program in the following languages:</H3>
+<UL>%s</UL>
+<H3>Your upload file...<BR>
+Name:<I>%s</I><BR>
+Contents:</H3>
+<PRE>%s</PRE>
+Click <A HREF="%s"><B>here</B></A> to return to form.
+</BODY></HTML>'''
+
+    def set_cpp_cookies(self):
+       for each_cookies in self.cookies.keys():
+           print 'Set-Cookie: CPP%s=%s; path=/' % \
+               (each_cookies, quote(self.cookies[each_cookies]))
+
+    def do_results(self):
+        MAXBYTES = 1024
+        lang_list = ''
+        for each_lang in self.langs:
+            lang_list = lang_list + '<LI>%s<BR>' % each_lang
+
+        file_data = ''
+        while len(file_data) < MAXBYTES:
+            data = self.fp.readline()
+            if data == '':
+                break
+            file_data = file_data + data
+        else:
+            file_data = file_data + '...<B><I>(file truncated due to size)</I></B>'
+        self.fp.close()
+        if file_data == '':
+            file_data = file_data + '...<B><I>(file upload error or file not given)</I></B>'
+        file_name = self.fn
+
+        if not self.cookies.has_key('user') or self.cookies['user'] == '':
+            cookie_status = '<I>(cookie ha not been set yet)</I>'
+            user_cook = ''
+        else:
+            user_cook = cookie_status = self.cookies['user']
+
+        self.cookies['info'] = join([self.who, join(self.langs, ','), file_name], ':')
+        self.set_cpp_cookies()
+        print AdvCGI.header + AdvCGI.reshtml % (cookie_status, self.who, lang_list,\
+                                          file_name, file_data, AdvCGI.url)
 
     def go(self):
         self.cookies = {}
