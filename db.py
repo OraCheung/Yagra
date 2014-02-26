@@ -82,6 +82,15 @@ class MyDB(object):
         except MySQLdb.Error, e:
             print "Mysql Error %d: %s" % (e.args[0], e.args[1])
 
+    def check_name(self, user):
+        'check Tabler User whether the name is exist' 
+        try:
+            self.cur.execute('select count(*) from User where user=%s',user) 
+            result = self.cur.fetchone()
+            return result[0]
+        except MySQLdb.Error, e:
+            print "Mysql Error %d: %s" % (e.args[0], e.args[1])
+
 if __name__ == '__main__':
     db = MyDB()
     print db
@@ -89,4 +98,5 @@ if __name__ == '__main__':
     print db.select_user('ora','oid')
  #    print db.insert_user('ki', 'ki')
     print db.update_status('ki',0)
-    print db.delete_user('ora3', 'ki3')
+    print db.check_name('ora3')
+    print db.check_name('ora')

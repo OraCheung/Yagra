@@ -122,6 +122,11 @@ Click <A HREF="%s"><B>here</B></A> to return to login.
         python_db = db.MyDB()
         python_db.insert_user(self.user, self.passwd) 
 
+    def checkDB(self):
+        python_db = db.MyDB()
+        result = python_db.check_name(self.user)
+        return result
+
     def go(self):
         self.cookies = {}
         self.error = ''
@@ -133,6 +138,9 @@ Click <A HREF="%s"><B>here</B></A> to return to login.
         if form.has_key('personName'):
             self.cookies['user'] = unquote(strip(form['personName'].value))
             self.user = capwords(strip(form['personName'].value))
+            result = self.checkDB()
+            if result > 0:   #greater than 0 mean name had exist
+                self.error = 'Your name %s is exist!' % (self.user)
             if self.user == '':
                 self.error = 'Your name is required. (blacnk)'
         else:
