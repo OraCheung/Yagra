@@ -77,10 +77,9 @@ Welcome to Yagra</TITLE></HEAD>
 <BODY><H2>Your Register Informations</H2>
 <H3>Your name is: <B>%s</B></H3>
 <H3>Your password is: <B>%s</B></H3>
+<IMG SRC="/cgi-bin/image/%s.jpg" width = '256' height = '256'>
 <H3>Your upload file...<BR>
-Name:<I>%s</I><BR>
-Contents:</H3>
-<PRE>%s</PRE>
+Name:<I>%s</I><BR></H3>
 Click <A HREF="%s"><B>here</B></A> to return to form.<BR>
 Click <A HREF="%s"><B>here</B></A> to return to login.
 </BODY></HTML>'''
@@ -91,19 +90,12 @@ Click <A HREF="%s"><B>here</B></A> to return to login.
                (each_cookies, quote(self.cookies[each_cookies]))
 
     def do_results(self):
-        MAXBYTES = 1024
-
-        file_data = ''
-        while len(file_data) < MAXBYTES:
-            data = self.fp.readline()
-            if data == '':
-                break
-            file_data = file_data + data
-        else:
-            file_data = file_data + '...<B><I>(file truncated due to size)</I></B>'
+        
+        path = '/var/www/cgi-bin/image/%s.jpg' % (self.user)
+        file = open(path, 'wb+')
+        file.write(self.fp.read())
         self.fp.close()
-        if file_data == '':
-            file_data = file_data + '...<B><I>(file upload error or file not given)</I></B>'
+        file.close()
         file_name = self.fn
 
         if not self.cookies.has_key('user') or self.cookies['user'] == '':
@@ -116,7 +108,7 @@ Click <A HREF="%s"><B>here</B></A> to return to login.
         self.set_cpp_cookies()
         self.insertDB()
         print AdvCGI.header + AdvCGI.reshtml % (cookie_status, self.passwd,\
-                                          file_name, file_data, AdvCGI.url, AdvCGI.login_url)
+                                      self.user, file_name, AdvCGI.url, AdvCGI.login_url)
 
     def insertDB(self):
         python_db = db.MyDB()
