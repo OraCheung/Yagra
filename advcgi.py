@@ -17,20 +17,17 @@ Welcome to Yagra</TITLE></HEAD>
 <FORM METHOD=post ACTION="%s" ENCTYPE="multipart/form-data">
 <H3>My Cookie Setting</H3>
 <LI><CODE><B>CPPuser = %s</B></CODE>
-<H3>Enter cookie value<BR>
-<INPUT NAME=cookie value="%s">(<I>optional</I>)</H3>
-<H3>Enter your name<BR>
-<INPUT NAME=person value="%s">(<I>required</I>)</H3>
-<H3>What languages can you program in?
-(<I>at least one required</I>)</H3>
-%s
+<H3>Enter Your Name:<BR>
+<INPUT NAME=personName value="%s">(<I>required</I>)</H3>
+<H3>Enter Your Password<BR>
+<INPUT NAME=personPassword value="%s" TYPE=password>(<I>required</I>)</H3>
+<H3>Enter Your Password Again<BR>
+<INPUT NAME=personPassword2 value="%s" TYPE=password>(<I>required</I>)</H3>
 <H3>Enter file to upload</H3>
-<INPUT TYPE=ile NAME=upfile VALUE="%s" SIZE=45>
+<INPUT TYPE=file NAME=upfile VALUE="%s" SIZE=45>
 <P><INPUT TYPE=submit>
 </FORM></BODY></HTML>'''
 
-    lang_set = ('Python', 'PERL', 'Java', 'C++', 'PHP', 'C', 'JavaScript')
-    lang_item = '<INPUT TYPE=checkbox NAME=lang VALUE="%s"%s> %s\n'
 
     def get_cpp_cookies(self):
         if environ.has_key('HTTP_COOKIE'):
@@ -45,22 +42,13 @@ Welcome to Yagra</TITLE></HEAD>
             self.cookies['info'] = self.cookies['user'] = ''
 
         if self.cookies['info'] != '':
-            self.who, lang_str, self.fn = split(self.cookies['info'], ':')
-            self.langs = split(lang_str, ',')
+            self.passwd, self.fn = split(self.cookies['info'], ':')
+            self.passwd2 = ''
         else:
-            self.who = self.fn = ''
-            self.langs = ['Python']
+            self.passwd = self.passwd2 = self.fn = ''
 
     def show_form(self):
         self.get_cpp_cookies()
-        lang_str = ''
-        for each_lang in AdvCGI.lang_set:
-            if each_lang in self.langs:
-                lang_str = lang_str + AdvCGI.lang_item %\
-                         (each_lang,' CHECKED', each_lang)
-            else:
-                lang_str = lang_str + AdvCGI.lang_item %\
-                         (each_lang,'', each_lang)
 
         if not self.cookies.has_key('user') or self.cookies['user'] == '':
             cookie_status = '<I>(cookie has not been set yet)</I>'
@@ -69,7 +57,7 @@ Welcome to Yagra</TITLE></HEAD>
             user_cook = cookie_status = self.cookies['user']
 
         print AdvCGI.header + AdvCGI.formhtml % (AdvCGI.url,\
-                  cookie_status, user_cook, self.who, lang_str, self.fn)
+                  cookie_status, user_cook, self.passwd, self.passwd2, self.fn)
 
     errhtml = '''<HTML><HEAD<TITLE>
 Welcome to Yagra</TITLE></HEAD>
@@ -84,10 +72,8 @@ Welcome to Yagra</TITLE></HEAD>
     reshtml = '''<HTML><HEAD<TITLE>
 Welcome to Yagra</TITLE></HEAD>
 <BODY><H2>Your Register Informations</H2>
-<H3>Your Cookie value is: <B>%s</B></H3>
 <H3>Your name is: <B>%s</B></H3>
-<H3>Your can program in the following languages:</H3>
-<UL>%s</UL>
+<H3>Your password is: <B>%s</B></H3>
 <H3>Your upload file...<BR>
 Name:<I>%s</I><BR>
 Contents:</H3>
@@ -102,9 +88,6 @@ Click <A HREF="%s"><B>here</B></A> to return to form.
 
     def do_results(self):
         MAXBYTES = 1024
-        lang_list = ''
-        for each_lang in self.langs:
-            lang_list = lang_list + '<LI>%s<BR>' % each_lang
 
         file_data = ''
         while len(file_data) < MAXBYTES:
@@ -125,9 +108,9 @@ Click <A HREF="%s"><B>here</B></A> to return to form.
         else:
             user_cook = cookie_status = self.cookies['user']
 
-        self.cookies['info'] = join([self.who, join(self.langs, ','), file_name], ':')
+        self.cookies['info'] = join([self.passwd, file_name], ':')
         self.set_cpp_cookies()
-        print AdvCGI.header + AdvCGI.reshtml % (cookie_status, self.who, lang_list,\
+        print AdvCGI.header + AdvCGI.reshtml % (cookie_status, self.passwd,\
                                           file_name, file_data, AdvCGI.url)
 
     def go(self):
@@ -138,28 +121,31 @@ Click <A HREF="%s"><B>here</B></A> to return to form.
             self.show_form()
             return
        
-        if form.has_key('person'):
-            self.who = capwords(strip(form['person'].value))
-            if self.who == '':
-                self.error = 'Your name is required. (blank)'
-        else:
-            self.error = 'Your name is required. (missing)'
-
-        if form.has_key('cookie'):
-            self.cookies['user'] = unquote(strip(form['cookie'].value))
+        if form.has_key('personName'):
+            self.cookies['user'] = unquote(strip(form['personName'].value))
+            self.user = capwords(strip(form['personName'].value))
+            if self.user == '':
+                self.error = 'Your name is required. (blacnk)'
         else:
             self.cookies['user'] = ''
+            self.error = 'Your name is required. (missing)'
 
-        self.langs = []
-        if form.has_key('lang'):
-            lang_data = form['lang']
-            if type(lang_data) == type([]):
-                for each_lang in lang_data:
-                    self.langs.append(each_lang.value)
-            else:
-                self.langs.append(lang_data.value)
+        if form.has_key('personPassword'):
+            self.passwd = strip(form['personPassword'].value)
+            if self.passwd == '':
+                self.error = 'Your password is required. (blank)'
         else:
-            self.error = 'At least one language required.'
+            self.error = 'Your password is required. (missing)'
+        if form.has_key('personPassword2'):
+            self.passwd2 = strip(form['personPassword2'].value)
+            if self.passwd2 == '':
+                self.error = 'Your password is required to input again. (blank)'
+        else:
+            self.error = 'Your password is required to input again. (missing)'
+
+        if len(self.passwd) > 0 and len(self.passwd2) > 0:
+            if self.passwd != self.passwd2: 
+                self.error = 'Your passwords are not the same!'
 
         if form.has_key('upfile'):
             upfile = form['upfile']
