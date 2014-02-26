@@ -71,6 +71,53 @@ Welcome to Yagra</TITLE></HEAD>
         print AdvCGI.header + AdvCGI.formhtml % (AdvCGI.url,\
                   cookie_status, user_cook, self.who, lang_str, self.fn)
 
+    def go(self):
+        self.cookies = {}
+        self.error = ''
+        form = FieldStorage()
+        if form.keys() == []:
+            self.show_form()
+            return
+       
+        if form.has_key('person'):
+            self.who = capwords(strip(form['person'].value))
+            if self.who == '':
+                self.error = 'Your name is required. (blank)'
+        else:
+            self.error = 'Your name is required. (missing)'
+
+        if form.has_key('cookie'):
+            self.cookies['user'] = unquote(strip(form['cookie'].value))
+        else:
+            self.cookies['user'] = ''
+
+        self.langs = []
+        if form.has_key('lang'):
+            lang_data = form['lang']
+            if type(lang_data) == type([]):
+                for each_lang in lang_data:
+                    self.langs.append(each_lang.value)
+            else:
+                self.langs.append(lang_data.value)
+        else:
+            self.error = 'At least one language required.'
+
+        if form.has_key('upfile'):
+            upfile = form['upfile']
+            self.fn = upfile.filename or ''
+            if upfile.file:
+                self.fp = upfile.file
+            else:
+                self.fp = StringIO('(no data)')
+                self.fn = ''
+        else:
+            self.fp = StringIO('(no file)')
+            self.fn = ''
+
+        if not self.error:
+            self.do_results()
+        else:
+            self.show_error()
 
 if __name__ == '__main__':
     page = AdvCGI()
