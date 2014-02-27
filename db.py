@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import hashlib
+
 import MySQLdb
 
 
@@ -11,16 +13,22 @@ class MyDB(object):
             self.conn = MySQLdb.connect(host='localhost', user='root', passwd='orange', port=3306)
             self.cur = self.conn.cursor()
             self.conn.select_db('python')
+            self.md = hashlib.md5()
 
         except MySQLdb.Error,e:
             print "Mysql Error %d: %s" % (e.args[0], e.args[1])
 
     def insert_user(self, user, passwd):
         try:
-            value = [user, passwd]
+            self.md.update(passwd)
+            hash_passwd = self.md.hexdigest()
+            pic_name = user + '@' + passwd
+            self.md.update(pic_name)
+            hash_pic = self.md.hexdigest()
+            value = [user, hash_passwd, hash_pic]
             count = self.cur.execute('insert into User (user, passwd, \
-                     create_time, login_time, login_status) VALUES \
-                     (%s, %s, now(), now(), 0)',value)
+                     create_time, login_time, login_status, pic_name) VALUES \
+                     (%s, %s, now(), now(), 0, %s)',value)
             if count != 1: 
                 print "Insert New User Error!"
             else:
@@ -30,7 +38,9 @@ class MyDB(object):
 
     def delete_user(self, user, passwd):
         try:
-            value = [user, passwd]
+            self.md.update(passwd)
+            hash_passwd = self.md.hexdigest()
+            value = [user, hash_passwd]
             count = self.cur.execute('delete from User Where user = %s \
                        and passwd = %s', value) 
             if count != 1: 
@@ -74,7 +84,9 @@ class MyDB(object):
     def select_user(self, user, passwd):
         'return the number of user for search'
         try:
-            value = [user, passwd]
+            self.md.update(passwd)
+            hash_passwd = self.md.hexdigest()
+            value = [user, hash_passwd]
             self.cur.execute('select count(*) from User where user=%s \
                                        and passwd=%s', value)
             result = self.cur.fetchone()
@@ -96,7 +108,7 @@ if __name__ == '__main__':
     print db
     print db.select_user('ora','ora')
     print db.select_user('ora','oid')
- #    print db.insert_user('ki', 'ki')
+    print db.insert_user('ki2', 'ki')
     print db.update_status('ki',0)
     print db.check_name('ora3')
     print db.check_name('ora')
