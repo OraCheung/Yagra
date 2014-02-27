@@ -2,6 +2,7 @@
 
 import cgi
 import os
+import hashlib
 
 import db
 
@@ -37,7 +38,11 @@ python_db = db.MyDB()
 result = python_db.select_user(name, passwd)
 if result == 1:
     python_db.update_status(name,1)
-    image = '<IMG SRC="/cgi-bin/image/%s.jpg" width = "256" height = "256" >' % (name)
+    m = hashlib.md5()
+    pic = name + '@' + passwd
+    m.update(pic)
+    hash_pic = m.hexdigest()
+    image = '<IMG SRC="/cgi-bin/image/%s.jpg" width = "256" height = "256" >' % (hash_pic)
     print header + reshtml % (name, passwd, image, url, loginout_url, name)
 else:
     print header+"You passwd is error!"

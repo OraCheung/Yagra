@@ -13,18 +13,19 @@ class MyDB(object):
             self.conn = MySQLdb.connect(host='localhost', user='root', passwd='orange', port=3306)
             self.cur = self.conn.cursor()
             self.conn.select_db('python')
-            self.md = hashlib.md5()
 
         except MySQLdb.Error,e:
             print "Mysql Error %d: %s" % (e.args[0], e.args[1])
 
     def insert_user(self, user, passwd):
         try:
-            self.md.update(passwd)
-            hash_passwd = self.md.hexdigest()
+            md = hashlib.md5()
+            md.update(passwd)
+            hash_passwd = md.hexdigest()
             pic_name = user + '@' + passwd
-            self.md.update(pic_name)
-            hash_pic = self.md.hexdigest()
+            md2 = hashlib.md5()
+            md2.update(pic_name)
+            hash_pic = md2.hexdigest()
             value = [user, hash_passwd, hash_pic]
             count = self.cur.execute('insert into User (user, passwd, \
                      create_time, login_time, login_status, pic_name) VALUES \
@@ -38,8 +39,9 @@ class MyDB(object):
 
     def delete_user(self, user, passwd):
         try:
-            self.md.update(passwd)
-            hash_passwd = self.md.hexdigest()
+            md = hashlib.md5()
+            md.update(passwd)
+            hash_passwd = md.hexdigest()
             value = [user, hash_passwd]
             count = self.cur.execute('delete from User Where user = %s \
                        and passwd = %s', value) 
@@ -84,8 +86,9 @@ class MyDB(object):
     def select_user(self, user, passwd):
         'return the number of user for search'
         try:
-            self.md.update(passwd)
-            hash_passwd = self.md.hexdigest()
+            md = hashlib.md5()
+            md.update(passwd)
+            hash_passwd = md.hexdigest()
             value = [user, hash_passwd]
             self.cur.execute('select count(*) from User where user=%s \
                                        and passwd=%s', value)
@@ -108,7 +111,8 @@ if __name__ == '__main__':
     print db
     print db.select_user('ora','ora')
     print db.select_user('ora','oid')
-    print db.insert_user('ki2', 'ki')
+    print db.delete_user('ki2', 'ki2')
+    print db.insert_user('ki2', 'ki2')
     print db.update_status('ki',0)
     print db.check_name('ora3')
     print db.check_name('ora')

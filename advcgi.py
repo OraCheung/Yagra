@@ -5,6 +5,7 @@ from os import environ
 from cStringIO import StringIO
 from urllib import quote, unquote
 from string import capwords, strip, split, join
+import hashlib
 
 import db
 
@@ -90,8 +91,11 @@ Click <A HREF="%s"><B>here</B></A> to return to login.
                (each_cookies, quote(self.cookies[each_cookies]))
 
     def do_results(self):
-        
-        path = '/var/www/cgi-bin/image/%s.jpg' % (self.user)
+        m = hashlib.md5()
+        image_name = self.user + '@' + self.passwd
+        m.update(image_name)
+        hash_image = m.hexdigest() 
+        path = '/var/www/cgi-bin/image/%s.jpg' % (hash_image)
         file = open(path, 'wb+')
         file.write(self.fp.read())
         self.fp.close()
@@ -108,7 +112,7 @@ Click <A HREF="%s"><B>here</B></A> to return to login.
         self.set_cpp_cookies()
         self.insertDB()
         print AdvCGI.header + AdvCGI.reshtml % (cookie_status, self.passwd,\
-                                      self.user, file_name, AdvCGI.url, AdvCGI.login_url)
+                                     hash_image, file_name, AdvCGI.url, AdvCGI.login_url)
 
     def insertDB(self):
         python_db = db.MyDB()
