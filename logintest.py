@@ -9,17 +9,39 @@ import db
 header = 'Content-Type: text/html\n\n'
 url = '/cgi-bin/login.py' 
 loginout_url = '/cgi-bin/loginout.py'
+logintest_url = '/cgi-bin/logintest.py'
 reshtml = '''<HTML><HEAD><TITLE>
 Yagra Logining</TITLE></HEAD>
 <BODY><H2>Welcome to Yagra</H2>
 <H3>Your Login Name is: <B>%s</B></H3>
 <H3>Your Login Password is: <B>%s</B></H3>
-<H3>Upload Head Photo is:</H3>
-%s
+<H3>Upload Head Photo is: %s.jpg</H3>
+<FORM action="">%s
+<BR><H3>Change Head Photo:</H3>
+<INPUT TYPE="file" ACCEPT=image/.jpg id=idChange Name="imageName" onchange="showImg(this.id,'idImg')"/></FORM>
 <BR>Click <A HREF="%s"><B>here</B></A> to return to login.
 <FORM METHOD=post ACTION="%s">
 <INPUT TYPE=hidden Name="personName" Value="%s">
 <P><INPUT TYPE=submit VALUE="Login Out"></FORM>
+<script type="text/javascript">
+function getFileUrl(sourceId){
+    var url;
+    if(navigator.userAgent.indexOf("MSIE")>=1){ //IE
+        url = document.getElementById(sourceId).value;
+    }else if(navigator.userAgent.indexOf("Firefox")>0) {
+        url = window.URL.createObjectURL(document.getElementById(sourceId).files.item(0));
+    }else if(navigator.userAgent.indexOf("Chrome")>0) {
+        url = window.URL.createObjectURL(document.getElementById(sourceId).files.item(0));
+    }
+    return url;
+}
+function showImg(sourceId, targetId)
+{
+    var url = getFileUrl(sourceId);
+    var imgPre = document.getElementById(targetId);
+    imgPre.src = url;
+}
+</script>
 </BODY></HTML>'''
 
 
@@ -42,7 +64,7 @@ if result == 1:
     pic = name + '@' + passwd
     m.update(pic)
     hash_pic = m.hexdigest()
-    image = '<IMG SRC="/cgi-bin/image/%s.jpg" width = "256" height = "256" >' % (hash_pic)
-    print header + reshtml % (name, passwd, image, url, loginout_url, name)
+    image = '<IMG SRC="/cgi-bin/image/%s.jpg" id=idImg width = "256" height = "256" style="display:block;"/>' % (hash_pic)
+    print header + reshtml % (name, passwd, hash_pic, image, url, loginout_url, name)
 else:
     print header+"You passwd is error!"
