@@ -16,14 +16,33 @@ Yagra Logining</TITLE></HEAD>
 <H3>Your Login Name is: <B>%s</B></H3>
 <H3>Your Login Password is: <B>%s</B></H3>
 <H3>Upload Head Photo is: %s.jpg</H3>
-<FORM action="">%s
+<FORM action="/cgi-bin/logintest.py" METHOD=post ENCTYPE="multipart/form-data">
+%s
 <BR><H3>Change Head Photo:</H3>
-<INPUT TYPE="file" ACCEPT=image/.jpg id=idChange Name="imageName" onchange="showImg(this.id,'idImg')"/></FORM>
+<INPUT TYPE="hidden" Name="personName" value="%s" />
+<INPUT TYPE="hidden" Name="personPassword" value="%s" />
+<INPUT TYPE="file" ACCEPT=image/.jpg id=idChange Name="imageName" onchange="showImg(this.id,'idImg')"/>
+<BR><INPUT TYPE="submit" VALUE="SAVE" /></FORM>
 <BR>Click <A HREF="%s"><B>here</B></A> to return to login.
 <FORM METHOD=post ACTION="%s">
 <INPUT TYPE=hidden Name="personName" Value="%s">
-<P><INPUT TYPE=submit VALUE="Login Out"></FORM>
+<BR><INPUT TYPE=submit VALUE="Login Out"></FORM>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 <script type="text/javascript">
+function Upload(){
+    var url = getFileUrl("idChange");
+    var dataSend = "image=" + url;
+    alert(url)
+    $.ajax(
+    {
+        type: "POST",
+        url: "/cgi-bin/upload.py",
+        data:dataSend,
+        success:function(){
+            alert("send success!");
+        }
+    });
+}
 function getFileUrl(sourceId){
     var url;
     if(navigator.userAgent.indexOf("MSIE")>=1){ //IE
@@ -54,7 +73,19 @@ if form.has_key('personPassword'):
     passwd = form['personPassword'].value
 else:
     passwd = ''
-
+if form.has_key('imageName'):
+    upfile = form['imageName']
+    if upfile.file:
+        mm = hashlib.md5()
+        pic2 = name + '@' + passwd
+        mm.update(pic2)
+        hash_pic1 = mm.hexdigest()
+        path = '/var/www/cgi-bin/image/%s.jpg' % (hash_pic1)
+        file = open(path,'wb+')
+        file.write(upfile.file.read())
+        upfile.file.close()
+        file.close() 
+    
 python_db = db.MyDB()
 
 result = python_db.select_user(name, passwd)
@@ -65,6 +96,6 @@ if result == 1:
     m.update(pic)
     hash_pic = m.hexdigest()
     image = '<IMG SRC="/cgi-bin/image/%s.jpg" id=idImg width = "256" height = "256" style="display:block;"/>' % (hash_pic)
-    print header + reshtml % (name, passwd, hash_pic, image, url, loginout_url, name)
+    print header + reshtml % (name, passwd, hash_pic, image, name, passwd,  url, loginout_url, name)
 else:
     print header+"You passwd is error!"
