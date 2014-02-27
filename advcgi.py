@@ -129,7 +129,7 @@ Click <A HREF="%s"><B>here</B></A> to return to login.
        
         if form.has_key('personName'):
             self.cookies['user'] = unquote(strip(form['personName'].value))
-            self.user = capwords(strip(form['personName'].value))
+            self.user = strip(form['personName'].value)
             result = self.checkDB()
             if result > 0:   #greater than 0 mean name had exist
                 self.error = 'Your name %s is exist!' % (self.user)
