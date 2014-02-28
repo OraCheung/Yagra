@@ -22,12 +22,11 @@ Yagra Logining</TITLE></HEAD>
 <INPUT TYPE="hidden" Name="personName" value="%s" />
 <INPUT TYPE="hidden" Name="personPassword" value="%s" />
 <INPUT TYPE="file" ACCEPT=image/.jpg id=idChange Name="imageName" onchange="showImg(this.id,'idImg')"/>
-<BR><INPUT TYPE="submit" VALUE="SAVE" /></FORM>
-<BR>Click <A HREF="%s"><B>here</B></A> to return to login.
+<BR><INPUT TYPE="submit" VALUE=" SAVE " /></FORM>
+Click <A HREF="%s"><B>here</B></A> to return to login.
 <FORM METHOD=post ACTION="%s">
 <INPUT TYPE=hidden Name="personName" Value="%s">
 <BR><INPUT TYPE=submit VALUE="Login Out"></FORM>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 <script type="text/javascript">
 function Upload(){
     var url = getFileUrl("idChange");
@@ -55,7 +54,7 @@ function getFileUrl(sourceId){
     return url;
 }
 function showImg(sourceId, targetId)
-{
+{   
     var url = getFileUrl(sourceId);
     var imgPre = document.getElementById(targetId);
     imgPre.src = url;
@@ -63,6 +62,7 @@ function showImg(sourceId, targetId)
 </script>
 </BODY></HTML>'''
 
+jquery = '''<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>'''
 
 form =cgi.FieldStorage()
 if form.has_key('personName'):

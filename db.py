@@ -68,7 +68,8 @@ class MyDB(object):
             #    print 'update status %d,value is %s' % (value[0], value[1])
                 count = self.cur.execute('update User set login_status=%s,login_time=now() where user=%s',value) 
                 if count != 1: 
-                    print "Change User Status Error!"
+                #    print "Change User Status Error!"
+                    pass
                 else:
                     self.conn.commit()
             else:
@@ -77,7 +78,8 @@ class MyDB(object):
                 count = self.cur.execute('update User set login_status=%s where \
                                       user=%s',value)
                 if count != 1: 
-                    print "Change User Status Error!"
+                #    print "Change User Status Error!"
+                    pass
                 else:
                     self.conn.commit()
         except MySQLdb.Error, e:

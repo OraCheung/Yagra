@@ -19,8 +19,6 @@ class AdvCGI:
 Welcome to Yagra</TITLE></HEAD>
 <BODY><H2>New User Information</H2>
 <FORM METHOD=post ACTION="%s" ENCTYPE="multipart/form-data">
-<H3>My Cookie Setting</H3>
-<LI><CODE><B>CPPuser = %s</B></CODE>
 <H3>Enter Your Name:<BR>
 <INPUT NAME=personName value="%s">(<I>required</I>)</H3>
 <H3>Enter Your Password<BR>
@@ -61,9 +59,9 @@ Welcome to Yagra</TITLE></HEAD>
             user_cook = cookie_status = self.cookies['user']
 
         print AdvCGI.header + AdvCGI.formhtml % (AdvCGI.url,\
-                  cookie_status, user_cook, self.passwd, self.passwd2, self.fn)
+                   user_cook, self.passwd, self.passwd2, self.fn)
 
-    errhtml = '''<HTML><HEAD<TITLE>
+    errhtml = '''<HTML><HEAD><TITLE>
 Welcome to Yagra</TITLE></HEAD>
 <BODY><H3>ERROR</H3>
 <B>%s</B><P>
@@ -73,7 +71,7 @@ Welcome to Yagra</TITLE></HEAD>
     def show_error(self):
         print AdvCGI.header + AdvCGI.errhtml % (self.error)
 
-    reshtml = '''<HTML><HEAD<TITLE>
+    reshtml = '''<HTML><HEAD><TITLE>
 Welcome to Yagra</TITLE></HEAD>
 <BODY><H2>Your Register Informations</H2>
 <H3>Your name is: <B>%s</B></H3>
@@ -81,7 +79,6 @@ Welcome to Yagra</TITLE></HEAD>
 <IMG SRC="/cgi-bin/image/%s.jpg" width = '256' height = '256'>
 <H3>Your upload file...<BR>
 Name:<I>%s</I><BR></H3>
-Click <A HREF="%s"><B>here</B></A> to return to form.<BR>
 Click <A HREF="%s"><B>here</B></A> to return to login.
 </BODY></HTML>'''
 
@@ -112,7 +109,7 @@ Click <A HREF="%s"><B>here</B></A> to return to login.
         self.set_cpp_cookies()
         self.insertDB()
         print AdvCGI.header + AdvCGI.reshtml % (cookie_status, self.passwd,\
-                                     hash_image, file_name, AdvCGI.url, AdvCGI.login_url)
+                                     hash_image, file_name,  AdvCGI.login_url)
 
     def insertDB(self):
         python_db = db.MyDB()
@@ -127,6 +124,7 @@ Click <A HREF="%s"><B>here</B></A> to return to login.
         self.cookies = {}
         self.error = ''
         form = FieldStorage()
+
         if form.keys() == []:
             self.show_form()
             return
@@ -176,7 +174,6 @@ Click <A HREF="%s"><B>here</B></A> to return to login.
             self.do_results()
         else:
             self.show_error()
-
 if __name__ == '__main__':
     page = AdvCGI()
     page.go()
