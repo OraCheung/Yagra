@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 
-import hashlib
-
 import MySQLdb
+
+from md5encry import MyMd5
+
 
 class MyDB(object):
     'class defination for using MySql'
 
-    def __init__(self): #init Mysql
+    def __init__(self): 
+        "init Mysql and choose database python"
         try:
             self.conn = MySQLdb.connect(host='localhost', user='root', passwd='orange', port=3306)
             self.cur = self.conn.cursor()
@@ -17,14 +19,13 @@ class MyDB(object):
             print "Mysql Error %d: %s" % (e.args[0], e.args[1])
 
     def insert_user(self, user, passwd):
+        "insert user passwd into the Table User"
         try:
-            md = hashlib.md5()
-            md.update(passwd)
-            hash_passwd = md.hexdigest()
+            md5 = MyMd5(passwd)
+            hash_passwd = md5.get_hex() 
             pic_name = user + '@' + passwd
-            md2 = hashlib.md5()
-            md2.update(pic_name)
-            hash_pic = md2.hexdigest()
+            md52 = MyMd5(pic_name)
+            hash_pic = md52.get_hex() 
             value = [user, hash_passwd, hash_pic]
             count = self.cur.execute('insert into User (user, passwd, \
                      create_time, login_time, login_status, pic_name) VALUES \
@@ -37,10 +38,10 @@ class MyDB(object):
             print "Mysql Error %d: %s" % (e.args[0], e.args[1])
 
     def delete_user(self, user, passwd):
+        "delete from the Table User"
         try:
-            md = hashlib.md5()
-            md.update(passwd)
-            hash_passwd = md.hexdigest()
+            md5 = MyMd5(passwd)
+            hash_passwd = md5.get_hex()
             value = [user, hash_passwd]
             count = self.cur.execute('delete from User Where user = %s \
                        and passwd = %s', value) 
@@ -59,13 +60,15 @@ class MyDB(object):
             print "Mysql Error %d: %s" % (e.args[0], e.args[1])
 
     def update_status(self, user, status):
+        "update the Table User for the user status"
         try:
             value = []
             if status ==1:
                 value.append(1)
                 value.append(user)
             #    print 'update status %d,value is %s' % (value[0], value[1])
-                count = self.cur.execute('update User set login_status=%s,login_time=now() where user=%s',value) 
+                count = self.cur.execute('update User set login_status=%s,\
+                                     login_time=now() where user=%s',value) 
                 if count != 1: 
                 #    print "Change User Status Error!"
                     pass
@@ -74,8 +77,8 @@ class MyDB(object):
             else:
                 value.append(0)
                 value.append(user)
-                count = self.cur.execute('update User set login_status=%s where \
-                                      user=%s',value)
+                count = self.cur.execute('update User set login_status=%s \
+                                        where user=%s',value)
                 if count != 1: 
                     pass
                 else:
@@ -86,9 +89,8 @@ class MyDB(object):
     def select_user(self, user, passwd):
         'return the number of user for search'
         try:
-            md = hashlib.md5()
-            md.update(passwd)
-            hash_passwd = md.hexdigest()
+            md5 = MyMd5(passwd)
+            hash_passwd = md5.get_hex()
             value = [user, hash_passwd]
             self.cur.execute('select count(*) from User where user=%s \
                                        and passwd=%s', value)
@@ -111,4 +113,3 @@ if __name__ == '__main__':
     print db
     print db.select_user('ora','ora')
     print db.select_user('ora','oid')
-    print db.check_name('ora')

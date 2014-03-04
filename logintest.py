@@ -2,8 +2,8 @@
 
 import cgi
 import os
-import hashlib
 
+from md5encry import MyMd5
 import db
 
 header = 'Content-Type: text/html\n\n'
@@ -21,7 +21,8 @@ Yagra Logining</TITLE></HEAD>
 <BR><H3>Change Head Photo:</H3>
 <INPUT TYPE="hidden" Name="personName" value="%s" />
 <INPUT TYPE="hidden" Name="personPassword" value="%s" />
-<INPUT TYPE="file" ACCEPT=image/.jpg id=idChange Name="imageName" onchange="showImg(this.id,'idImg')"/>
+<INPUT TYPE="file" ACCEPT=image/.jpg id=idChange Name="imageName" \
+onchange="showImg(this.id,'idImg')"/>
 <BR><INPUT TYPE="submit" VALUE=" SAVE " /></FORM>
 Click <A HREF="%s"><B>here</B></A> to return to login.
 <FORM METHOD=post ACTION="%s">
@@ -75,10 +76,9 @@ def process():
     if form.has_key('imageName'):
         upfile = form['imageName']
         if upfile.file:
-            mm = hashlib.md5()
             pic2 = name + '@' + passwd
-            mm.update(pic2)
-            hash_pic1 = mm.hexdigest()
+            md5 = MyMd5(pic2)
+            hash_pic1 = md5.get_hex() 
             path = '/var/www/cgi-bin/image/%s.jpg' % (hash_pic1)
             file = open(path,'wb+')
             file.write(upfile.file.read())
@@ -90,10 +90,9 @@ def process():
     result = python_db.select_user(name, passwd)
     if result == 1:
         python_db.update_status(name,1)
-        m = hashlib.md5()
         pic = name + '@' + passwd
-        m.update(pic)
-        hash_pic = m.hexdigest()
+        md51 = MyMd5(pic)
+        hash_pic = md51.get_hex() 
         image = '<IMG SRC="/cgi-bin/image/%s.jpg" id=idImg width = "256" height = "256" style="display:block;"/>'\
                 % (hash_pic) 
         print header + reshtml % (name, passwd, hash_pic, image, name, passwd,  url, loginout_url, name)
