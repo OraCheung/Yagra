@@ -62,40 +62,43 @@ function showImg(sourceId, targetId)
 </script>
 </BODY></HTML>'''
 
-jquery = '''<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>'''
-
-form =cgi.FieldStorage()
-if form.has_key('personName'):
-    name = form['personName'].value
-else:
-    name = ''
-if form.has_key('personPassword'):
-    passwd = form['personPassword'].value
-else:
-    passwd = ''
-if form.has_key('imageName'):
-    upfile = form['imageName']
-    if upfile.file:
-        mm = hashlib.md5()
-        pic2 = name + '@' + passwd
-        mm.update(pic2)
-        hash_pic1 = mm.hexdigest()
-        path = '/var/www/cgi-bin/image/%s.jpg' % (hash_pic1)
-        file = open(path,'wb+')
-        file.write(upfile.file.read())
-        upfile.file.close()
-        file.close() 
+def process():
+    form =cgi.FieldStorage()
+    if form.has_key('personName'):
+        name = form['personName'].value
+    else:
+        name = ''
+    if form.has_key('personPassword'):
+        passwd = form['personPassword'].value
+    else:
+        passwd = ''
+    if form.has_key('imageName'):
+        upfile = form['imageName']
+        if upfile.file:
+            mm = hashlib.md5()
+            pic2 = name + '@' + passwd
+            mm.update(pic2)
+            hash_pic1 = mm.hexdigest()
+            path = '/var/www/cgi-bin/image/%s.jpg' % (hash_pic1)
+            file = open(path,'wb+')
+            file.write(upfile.file.read())
+            upfile.file.close()
+            file.close() 
     
-python_db = db.MyDB()
+    python_db = db.MyDB()
 
-result = python_db.select_user(name, passwd)
-if result == 1:
-    python_db.update_status(name,1)
-    m = hashlib.md5()
-    pic = name + '@' + passwd
-    m.update(pic)
-    hash_pic = m.hexdigest()
-    image = '<IMG SRC="/cgi-bin/image/%s.jpg" id=idImg width = "256" height = "256" style="display:block;"/>' % (hash_pic)
-    print header + reshtml % (name, passwd, hash_pic, image, name, passwd,  url, loginout_url, name)
-else:
-    print header+"You passwd is error!"
+    result = python_db.select_user(name, passwd)
+    if result == 1:
+        python_db.update_status(name,1)
+        m = hashlib.md5()
+        pic = name + '@' + passwd
+        m.update(pic)
+        hash_pic = m.hexdigest()
+        image = '<IMG SRC="/cgi-bin/image/%s.jpg" id=idImg width = "256" height = "256" style="display:block;"/>'\
+                % (hash_pic) 
+        print header + reshtml % (name, passwd, hash_pic, image, name, passwd,  url, loginout_url, name)
+    else:
+        print header+"You passwd is error!"
+
+if __name__ == '__main__':
+    process()

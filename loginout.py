@@ -12,10 +12,15 @@ Yagra Loginout</TITLE></HEAD>
 <H3><B>%s</B>&nbspis loginouted!</H3>
 <BR>Click <A HREF="%s"><B>here</B></A> to return to login.
 </BODY></HTML>'''
-print header
-form = cgi.FieldStorage()
-if form.has_key('personName'):
-    name = form['personName'].value
-    python_db = db.MyDB()
-    python_db.update_status(name,0)
-    print reshtml % (name, url)
+
+def process():
+    print header
+    form = cgi.FieldStorage()
+    if form.has_key('personName'):
+        name = form['personName'].value
+        python_db = db.MyDB()
+        python_db.update_status(name,0)
+        print reshtml % (name, url)
+
+if __name__ == '__main__':
+    process()

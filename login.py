@@ -7,7 +7,7 @@ header = 'Content-Type: text/html\n\n'
 formhtml = '''<HTML><HEAD><TITLE>
 Ora CGI Demo</TITLE></HEAD>
 <BODY><H3>Welcome to Yagra: </H3> 
-<FORM ACTION="/cgi-bin/logintest.py">
+<FORM METHOD=post ACTION="/cgi-bin/logintest.py">
 <B>Enter your Name:&nbsp&nbsp&nbsp&nbsp&nbsp</B><BR>
 <INPUT TYPE=hidden NAME=action VALUE=edit>
 <INPUT TYPE=text NAME=personName VALUE="" SIZE=15><BR>
@@ -15,20 +15,7 @@ Ora CGI Demo</TITLE></HEAD>
 <INPUT TYPE=hidden NAME=action VALUE=edit>
 <INPUT TYPE=password NAME=personPassword VALUE="" SIZE=15><BR>
 <P><B>If you are new user,please first </B><a href="/cgi-bin/advcgi.py">REGISTER</a>
-%s
 <p><INPUT TYPE=submit VALUE="login" ></FORM></BODY></HTML>'''
-
-fradio = '<INPUT TYPE=radio NAME=howmany VALUE="%s" %s> %s\n'
-
-def show_form():
-    friends = ''
-    for i in [0, 10, 25, 50, 100]:
-        checked = ''
-        if i == 0:
-            checked = 'CHECKED'
-        friends = friends + fradio % (str(i), checked, str(i))
-    friends = ''
-    print header + formhtml % (friends)
 
 reshtml = '''<HTML><HEAD><TITLE>
 Ora CGI Demo</TITLE></HEAD>
@@ -36,6 +23,9 @@ Ora CGI Demo</TITLE></HEAD>
 Your name is: <B>%s</B><p>
 You have <B>%s</B>friends.
 </BODY></HTML>'''
+
+def show_form():
+    print header + formhtml
 
 def do_results(who, howmany):
     print header + reshtml % (who, who, howmany)
