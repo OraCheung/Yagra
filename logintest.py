@@ -10,6 +10,7 @@ header = 'Content-Type: text/html\n\n'
 url = '/cgi-bin/login.py' 
 loginout_url = '/cgi-bin/loginout.py'
 logintest_url = '/cgi-bin/logintest.py'
+
 reshtml = '''<HTML><HEAD><TITLE>
 Yagra Logining</TITLE></HEAD>
 <BODY><H2>Welcome to Yagra</H2>
@@ -28,6 +29,10 @@ Click <A HREF="%s"><B>here</B></A> to return to login.
 <FORM METHOD=post ACTION="%s">
 <INPUT TYPE=hidden Name="personName" Value="%s">
 <BR><INPUT TYPE=submit VALUE="Login Out"></FORM>
+%s
+</BODY></HTML>'''
+
+scripthtml = '''
 <script type="text/javascript">
 function Upload(){
     var url = getFileUrl("idChange");
@@ -60,8 +65,7 @@ function showImg(sourceId, targetId)
     var imgPre = document.getElementById(targetId);
     imgPre.src = url;
 }
-</script>
-</BODY></HTML>'''
+</script>'''
 
 def process():
     form =cgi.FieldStorage()
@@ -95,7 +99,8 @@ def process():
         hash_pic = md51.get_hex() 
         image = '<IMG SRC="/cgi-bin/image/%s.jpg" id=idImg width = "256" height = "256" style="display:block;"/>'\
                 % (hash_pic) 
-        print header + reshtml % (name, passwd, hash_pic, image, name, passwd,  url, loginout_url, name)
+        print header + reshtml % (name, passwd, hash_pic, image, name, passwd,\
+                                  url, loginout_url, name, scripthtml)
     else:
         print header+"You passwd is error!"
 
