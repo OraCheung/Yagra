@@ -67,6 +67,13 @@ function showImg(sourceId, targetId)
 }
 </script>'''
 
+errhtml = '''<HTML><HEAD><TITLE>
+Welcome to Yagra</TITLE></HEAD>
+<BODY><H3>ERROR</H3>
+<B>%s</B><P>
+<FORM><INPUT TYPE=button VALUE=Back ONCLICK="window.history.back()"></FORM>
+</BODY></HTML>'''
+
 def process():
     form =cgi.FieldStorage()
     if form.has_key('personName'):
@@ -102,7 +109,7 @@ def process():
         print header + reshtml % (name, passwd, hash_pic, image, name, passwd,\
                                   url, loginout_url, name, scripthtml)
     else:
-        print header+"You passwd is error!"
+        print header + errhtml % ("You passwd is error!")
 
 if __name__ == '__main__':
     process()
