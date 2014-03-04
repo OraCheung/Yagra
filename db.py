@@ -4,7 +4,6 @@ import hashlib
 
 import MySQLdb
 
-
 class MyDB(object):
     'class defination for using MySql'
 
@@ -78,7 +77,6 @@ class MyDB(object):
                 count = self.cur.execute('update User set login_status=%s where \
                                       user=%s',value)
                 if count != 1: 
-                #    print "Change User Status Error!"
                     pass
                 else:
                     self.conn.commit()
@@ -113,8 +111,4 @@ if __name__ == '__main__':
     print db
     print db.select_user('ora','ora')
     print db.select_user('ora','oid')
-    print db.delete_user('ki2', 'ki2')
-    print db.insert_user('ki2', 'ki2')
-    print db.update_status('ki',0)
-    print db.check_name('ora3')
     print db.check_name('ora')

@@ -2,8 +2,6 @@
 
 import cgi
 
-#import db
-
 header = 'Content-Type: text/html\n\n'
 
 formhtml = '''<HTML><HEAD><TITLE>
@@ -31,7 +29,6 @@ def show_form():
         friends = friends + fradio % (str(i), checked, str(i))
     friends = ''
     print header + formhtml % (friends)
-#show_form()
 
 reshtml = '''<HTML><HEAD><TITLE>
 Ora CGI Demo</TITLE></HEAD>

@@ -10,7 +10,7 @@ import hashlib
 import db
 
 class AdvCGI:
-
+'a new class for user information input and show'
     header = 'Content-Type: text/html\n\n'
     url = '/cgi-bin/advcgi.py'
     login_url = '/cgi-bin/login.py'
