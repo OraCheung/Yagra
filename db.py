@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import os
+
 import MySQLdb
 
 from md5encry import MyMd5
@@ -11,9 +13,15 @@ class MyDB(object):
     def __init__(self): 
         "init Mysql and choose database python"
         try:
-            self.conn = MySQLdb.connect(host='localhost', user='root', passwd='orange', port=3306)
+            f = open('mysql.txt', 'r')
+            (username, password, database) = f    
+            f.close()
+            username = username.strip('\n')
+            password = password.strip('\n')
+            database = database.strip('\n')
+            self.conn = MySQLdb.connect(host='localhost', user=username, passwd=password, port=3306)
             self.cur = self.conn.cursor()
-            self.conn.select_db('python')
+            self.conn.select_db(database)
 
         except MySQLdb.Error,e:
             print "Mysql Error %d: %s" % (e.args[0], e.args[1])
